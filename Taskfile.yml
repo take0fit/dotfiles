@@ -22,31 +22,9 @@ tasks:
     deps: [bin:chmod]
     cmds:
       - ./.bin/sync
-      - git status --short
 
   apply:
     desc: "Apply repo -> local ~/.config"
     deps: [bin:chmod]
     cmds:
       - ./.bin/apply
-
-  status:
-    desc: "Show git status"
-    cmds:
-      - git status
-
-  diff:
-    desc: "Show git diff"
-    cmds:
-      - git diff
-
-  commit:
-    desc: "Commit changes (usage: task commit MSG='message')"
-    vars:
-      MSG: '{{.MSG | default ""}}'
-    preconditions:
-      - sh: '[ -n "{{.MSG}}" ]'
-        msg: "MSG is required. Example: task commit MSG='update configs'"
-    cmds:
-      - git add -A
-      - git commit -m "{{.MSG}}"
