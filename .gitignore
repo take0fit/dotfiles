@@ -1,0 +1,19 @@
+# default: ignore everything
+*
+
+# allow meta
+!.gitignore
+!README.md
+!Taskfile.yml
+!.bin/
+!.bin/**
+!.config/
+!.config/**/
+
+# whitelist only managed configs
+!.config/nvim/**
+!.config/wezterm/**
+!.config/aerospace/**
+!.config/vim/**
+!.config/zsh/rc/**
+

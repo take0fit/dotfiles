@@ -1,0 +1,122 @@
+" ==============================
+" Minimal-but-Useful .vimrc
+" - Disable arrow keys
+" - Quality-of-life defaults
+" ==============================
+
+" --- Basic ---
+set nocompatible
+set encoding=utf-8
+scriptencoding utf-8
+
+filetype plugin indent on
+syntax on
+
+let mapleader=" "   " Leader = Space
+
+" --- Display ---
+set number
+set relativenumber
+set cursorline
+set showcmd
+set showmode
+set wildmenu
+set laststatus=2
+set signcolumn=yes
+set scrolloff=5
+set sidescrolloff=5
+
+" --- Search ---
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
+" <Esc> でハイライトを消す
+nnoremap <Esc> :nohlsearch<CR>
+
+" --- Indent / Tabs ---
+set expandtab
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set smartindent
+set autoindent
+
+" --- Editing behavior ---
+set backspace=indent,eol,start
+set clipboard=unnamed,unnamedplus" クリップボード共有（+clipboardが必要）
+set hidden               " 未保存でもバッファ切替OK
+set updatetime=300
+set timeoutlen=400
+
+" --- Files / Undo ---
+set nobackup
+set nowritebackup
+set noswapfile
+
+" 永続Undo（ディレクトリが無いと効かないので作成推奨）
+if has('persistent_undo')
+  set undofile
+  set undodir=~/.vim/undodir
+endif
+
+" --- Keymaps: Save / Quit ---
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>x :x<CR>
+
+" --- Keymaps: Better movement ---
+" 行が折り返されている時に見た目通り移動
+nnoremap j gj
+nnoremap k gk
+
+" --- Disable Arrow Keys (Normal/Insert/Visual/Command) ---
+" 完全に無効化したいなら <Nop> だけでOK
+" 「使ったら警告を出す」形にもしてあります
+nnoremap <Up>    :echo "Use k"<CR>
+nnoremap <Down>  :echo "Use j"<CR>
+nnoremap <Left>  :echo "Use h"<CR>
+nnoremap <Right> :echo "Use l"<CR>
+
+inoremap <Up>    <Nop>
+inoremap <Down>  <Nop>
+inoremap <Left>  <Nop>
+inoremap <Right> <Nop>
+
+vnoremap <Up>    <Nop>
+vnoremap <Down>  <Nop>
+vnoremap <Left>  <Nop>
+vnoremap <Right> <Nop>
+
+cnoremap <Up>    <Nop>
+cnoremap <Down>  <Nop>
+cnoremap <Left>  <Nop>
+cnoremap <Right> <Nop>
+
+" --- Convenience: Window navigation (Ctrl + hjkl) ---
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" --- Convenience: Yank/Paste with system clipboard ---
+" Visual選択 → クリップボードへコピー
+vnoremap <leader>y "+y
+" クリップボードから貼り付け
+nnoremap <leader>p "+p
+vnoremap <leader>p "+p
+
+" --- Quality: Keep selection when indenting in Visual ---
+vnoremap < <gv
+vnoremap > >gv
+
+" --- Optional: Quick fix / location list ---
+nnoremap <leader>co :copen<CR>
+nnoremap <leader>cc :cclose<CR>
+
+" --- Safety: create undodir automatically if possible ---
+" Vimだけではmkdirが弱いことがあるので、無ければ手動で作成してOK
+" mkdir -p ~/.vim/undodir
+
+
