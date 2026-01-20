@@ -2,10 +2,11 @@ local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
 config.automatically_reload_config = true
-config.font_size = 10.0
+config.font_size = 14.0
 config.use_ime = true
-config.window_background_opacity = 0.7
+config.window_background_opacity = 0.8
 config.macos_window_background_blur = 20
+config.color_scheme = "Kanagawa Dragon (Gogh)"
 
 ----------------------------------------------------
 -- Tab
@@ -81,4 +82,3 @@ config.key_tables = require("keybinds").key_tables
 config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 2000 }
 
 return config
-

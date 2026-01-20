@@ -2,7 +2,7 @@ return {
   {
     "craftzdog/solarized-osaka.nvim",
     branch = "main",
-    lazy = true, -- Load on startup
+    lazy = true,
     priority = 1000,
     opts = {
       transparent = true,
@@ -17,6 +17,19 @@ return {
       hide_inactive_statusline = false,
       dim_inactive = false,
       lualine_bold = false,
+    },
+  },
+  {
+    "rebelot/kanagawa.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      transparent = true,
+      theme = "dragon",
+      background = {
+        dark = "dragon",
+        light = "lotus",
+      },
     },
   },
   -- filename
