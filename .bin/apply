@@ -8,6 +8,7 @@ mkdir -p "$HOME/.config"
 rsync -a --delete "$REPO_ROOT/.config/nvim/"      "$HOME/.config/nvim/"      2>/dev/null || true
 rsync -a --delete "$REPO_ROOT/.config/wezterm/"   "$HOME/.config/wezterm/"   2>/dev/null || true
 rsync -a --delete "$REPO_ROOT/.config/aerospace/" "$HOME/.config/aerospace/" 2>/dev/null || true
+rsync -a --delete "$REPO_ROOT/.config/lazygit/"   "$HOME/.config/lazygit/"   2>/dev/null || true
 rsync -a --delete "$REPO_ROOT/.config/vim/"       "$HOME/.config/vim/"       2>/dev/null || true
 rsync -a --delete "$REPO_ROOT/.config/zsh/rc/"    "$HOME/.config/zsh/rc/"    2>/dev/null || true
 

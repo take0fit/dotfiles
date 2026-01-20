@@ -14,6 +14,6 @@
 !.config/nvim/**
 !.config/wezterm/**
 !.config/aerospace/**
+!.config/lazygit/**
 !.config/vim/**
 !.config/zsh/rc/**
-

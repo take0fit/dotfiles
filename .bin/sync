@@ -4,11 +4,13 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 mkdir -p "$REPO_ROOT/.config"
+mkdir -p "$REPO_ROOT/.config/lazygit"
 mkdir -p "$REPO_ROOT/.config/zsh/rc"
 
 rsync -a "$HOME/.config/nvim/"      "$REPO_ROOT/.config/nvim/"      2>/dev/null || true
 rsync -a "$HOME/.config/wezterm/"   "$REPO_ROOT/.config/wezterm/"   2>/dev/null || true
 rsync -a "$HOME/.config/aerospace/" "$REPO_ROOT/.config/aerospace/" 2>/dev/null || true
+rsync -a "$HOME/.config/lazygit/"   "$REPO_ROOT/.config/lazygit/"   2>/dev/null || true
 rsync -a "$HOME/.config/vim/"       "$REPO_ROOT/.config/vim/"       2>/dev/null || true
 rsync -a "$HOME/.config/zsh/rc/"    "$REPO_ROOT/.config/zsh/rc/"    2>/dev/null || true
 

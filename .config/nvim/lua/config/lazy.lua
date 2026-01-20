@@ -17,7 +17,7 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = {
     -- add LazyVim and import its plugins
-    { "LazyVim/LazyVim", import = "lazyvim.plugins", opts = { colorscheme = "solarized-osaka" } },
+    { "LazyVim/LazyVim", import = "lazyvim.plugins", opts = { colorscheme = "kanagawa-dragon" } },
     -- { "LazyVim/LazyVim", import = "lazyvim.plugins", opts = { colorscheme = "zenbones" } },
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
     -- LazyExtra
@@ -31,6 +31,7 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.util.mini-hipatterns" },
     { import = "lazyvim.plugins.extras.util.octo" },
     -- LazyExtra editor
+    { import = "lazyvim.plugins.extras.editor.neo-tree" },
     { import = "lazyvim.plugins.extras.editor.Inc-rename" },
     -- LazyExtra lang
     { import = "lazyvim.plugins.extras.lang.markdown" },

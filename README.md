@@ -12,6 +12,7 @@ macOS 上の `~/.config` 配下の設定（Neovim / WezTerm / AeroSpace / Vim / 
 
 このリポジトリでは以下を管理します。
 
+- `~/.config/lazygit/`
 - `~/.config/nvim/`
 - `~/.config/wezterm/`
 - `~/.config/aerospace/`
@@ -26,6 +27,7 @@ macOS 上の `~/.config` 配下の設定（Neovim / WezTerm / AeroSpace / Vim / 
 
 ├── .bin/                # 運用スクリプト（apply/sync/doctor 等）
 ├── .config/             # 管理対象の設定ファイル（~/.config と同構造）
+│   ├── lazygit/
 │   ├── nvim/
 │   ├── wezterm/
 │   ├── aerospace/
@@ -123,4 +125,3 @@ git push
 ## Thanks
 
 mozumasu さんの dotfiles（上記リンク）を参考に、各利用ツールの設定ファイルを作成しました。感謝です🐈
-
