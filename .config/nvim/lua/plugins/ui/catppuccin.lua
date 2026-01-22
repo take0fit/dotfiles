@@ -1,13 +1,17 @@
 return {
   {
     "catppuccin/nvim",
-    enabled = false,
-    lazy = true, -- この指定がないと反映されない
+    enabled = true,
+    lazy = false,
+    priority = 1000,
     name = "catppuccin",
     opts = {
+      flavour = "mocha",
+      transparent_background = true,
       integrations = {
         aerial = true,
         alpha = true,
+        blink_cmp = true,
         cmp = true,
         dashboard = true,
         flash = true,
@@ -36,18 +40,24 @@ return {
         noice = true,
         notify = true,
         semantic_tokens = true,
+        snacks = true,
         telescope = true,
         treesitter = true,
         treesitter_context = true,
         which_key = true,
       },
     },
+    config = function(_, opts)
+      require("catppuccin").setup(opts)
+      vim.cmd.colorscheme("catppuccin")
+    end,
   },
-  -- 起動時のデフォルト設定に使用したい場合は下記を有効化する
-  -- {
-  --   "LazyVim/LazyVim",
-  --   opts = {
-  --     colorscheme = "catppuccin",
-  --   },
-  -- },
+  -- bufferlineのcatppuccin連携を無効化（LazyVimのデフォルト設定を上書き）
+  {
+    "akinsho/bufferline.nvim",
+    opts = function(_, opts)
+      -- catppuccin.special.bufferlineは廃止されたのでhighlightsを空にする
+      opts.highlights = {}
+    end,
+  },
 }

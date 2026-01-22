@@ -1,5 +1,16 @@
 return {
   {
+    "lewis6991/gitsigns.nvim",
+    opts = {
+      current_line_blame = true,
+      current_line_blame_opts = {
+        virt_text = true,
+        virt_text_pos = "eol",
+        delay = 300,
+      },
+    },
+  },
+  {
     "dinhhuy258/git.nvim", -- git プラグイン
     keys = {
       {
@@ -33,12 +44,12 @@ return {
         show_help_hints = true, -- Show hints for how to open the help panel
         watch_index = true, -- Update views and index buffers when the git index changes.
         icons = { -- Only applies when use_icons is true.
-          folder_closed = "",
-          folder_open = "",
+          folder_closed = "",
+          folder_open = "",
         },
         signs = {
-          fold_closed = "",
-          fold_open = "",
+          fold_closed = "",
+          fold_open = "",
           done = "✓",
         },
         view = {
@@ -54,7 +65,7 @@ return {
           -- For more info, see |diffview-config-view.x.layout|.
           default = {
             -- Config for changed files, and staged files in diff views.
-            layout = "diff2_horizontal",
+            layout = "diff2_vertical",
             disable_diagnostics = false, -- Temporarily disable diagnostics for diff buffers while in the view.
             winbar_info = false, -- See |diffview-config-view.x.winbar_info|
           },
@@ -111,7 +122,27 @@ return {
           DiffviewOpen = {},
           DiffviewFileHistory = {},
         },
-        hooks = {}, -- See |diffview-config-hooks|
+        hooks = {
+          diff_buf_win_enter = function(bufnr, winid, ctx)
+            vim.wo[winid].wrap = true
+          end,
+          view_opened = function(view)
+            -- Diffviewが開いている時、FocusGainedで自動リフレッシュ
+            vim.api.nvim_create_autocmd("FocusGained", {
+              group = vim.api.nvim_create_augroup("DiffviewAutoRefresh", { clear = true }),
+              callback = function()
+                local lib = require("diffview.lib")
+                if lib.get_current_view() then
+                  require("diffview.actions").refresh_files()
+                end
+              end,
+            })
+          end,
+          view_closed = function(view)
+            -- Diffviewが閉じられたらautocmdを削除
+            pcall(vim.api.nvim_del_augroup_by_name, "DiffviewAutoRefresh")
+          end,
+        },
         keymaps = {
           disable_defaults = true, -- Disable the default keymaps
           view = {
@@ -367,6 +398,53 @@ return {
             { "n", "?", actions.help("file_panel"), { desc = "Open the help panel" } },
             {
               "n",
+              "yn",
+              function()
+                local view = require("diffview.lib").get_current_view()
+                if view and view.panel and view.panel.cur_file then
+                  local entry = view.panel.cur_file
+                  if entry.path then
+                    local filename = vim.fn.fnamemodify(entry.path, ":t")
+                    vim.fn.setreg("+", filename, "c")
+                    vim.notify("Copied: " .. filename)
+                  end
+                end
+              end,
+              { desc = "Copy filename" },
+            },
+            {
+              "n",
+              "yp",
+              function()
+                local view = require("diffview.lib").get_current_view()
+                if view and view.panel and view.panel.cur_file then
+                  local entry = view.panel.cur_file
+                  if entry.path then
+                    vim.fn.setreg("+", entry.path, "c")
+                    vim.notify("Copied: " .. entry.path)
+                  end
+                end
+              end,
+              { desc = "Copy relative path" },
+            },
+            {
+              "n",
+              "yP",
+              function()
+                local view = require("diffview.lib").get_current_view()
+                if view and view.panel and view.panel.cur_file then
+                  local entry = view.panel.cur_file
+                  if entry.path then
+                    local abs_path = vim.fn.fnamemodify(entry.path, ":p")
+                    vim.fn.setreg("+", abs_path, "c")
+                    vim.notify("Copied: " .. abs_path)
+                  end
+                end
+              end,
+              { desc = "Copy absolute path" },
+            },
+            {
+              "n",
               "<leader>cO",
               actions.conflict_choose_all("ours"),
               { desc = "Choose the OURS version of a conflict for the whole file" },
@@ -522,17 +600,26 @@ return {
   },
   {
     "choplin/code-review.nvim",
-    enabled = false,
+    enabled = true,
     config = function()
+      -- プロジェクト名とブランチ名を取得してレビューディレクトリを作成
+      local function get_review_dir()
+        local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+        local branch = vim.fn.system("git rev-parse --abbrev-ref HEAD 2>/dev/null"):gsub("\n", "")
+        if branch == "" then
+          branch = "no-branch"
+        end
+        -- ブランチ名の/を_に置換（feature/xxx -> feature_xxx）
+        branch = branch:gsub("/", "_")
+        return vim.fn.stdpath("data") .. "/reviews/" .. project_name .. "/" .. branch
+      end
+
       require("code-review").setup({
         comment = {
           storage = {
-            -- Each comment is saved as a separate file: YYYY-MM-DD-HHMMSS-NNN.md
-            backend = "file", --default: "memory"
+            backend = "file",
             file = {
-              -- dir = ".code-review", -- Default: project root/.code-review/
-              dir = ".reviews", -- Alternative: project root/.reviews/
-              -- dir = "~/src/reviews", -- Absolute path: ~/reviews/
+              dir = get_review_dir(),
             },
           },
         },
