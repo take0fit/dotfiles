@@ -38,6 +38,14 @@ keymap("n", "<C-w><right>", "<C-w>>")
 keymap("n", "<C-w><up>", "<C-w>+")
 keymap("n", "<C-w><down>", "<C-w>-")
 
+-- Move lines
+keymap("n", "<C-S-j>", "<cmd>execute 'move .+' . v:count1<cr>==", { desc = "Move Line Down" })
+keymap("n", "<C-S-k>", "<cmd>execute 'move .-' . (v:count1 + 1)<cr>==", { desc = "Move Line Up" })
+keymap("i", "<C-S-j>", "<esc><cmd>m .+1<cr>==gi", { desc = "Move Line Down" })
+keymap("i", "<C-S-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move Line Up" })
+keymap("v", "<C-S-j>", ":<C-u>execute \"'<,'>move '>+\" . v:count1<cr>gv=gv", { desc = "Move Line Down" })
+keymap("v", "<C-S-k>", ":<C-u>execute \"'<,'>move '<-\" . (v:count1 + 1)<cr>gv=gv", { desc = "Move Line Up" })
+
 -- Diagnostics
 keymap("n", "<C-j>", function()
   vim.diagnostic.goto_next()
@@ -177,3 +185,73 @@ keymap("n", "z", function()
 end, { desc = "Cycle scroll after zz / normal z commands" })
 -- terminal modeで Esc を押したら Neovimノーマルへ戻す
 vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { silent = true, desc = "Exit terminal mode" })
+
+-- 相対パス:行番号 をクリップボードにコピー
+keymap("n", "<leader>yl", function()
+  local path = vim.fn.expand("%")
+  local line = vim.fn.line(".")
+  local result = path .. ":" .. line
+  vim.fn.setreg("+", result)
+  print("Copied: " .. result)
+end, { desc = "Yank file:line" })
+
+-- 範囲選択時は開始行-終了行の形式
+keymap("v", "<leader>yl", function()
+  local start_line = vim.fn.line("v")
+  local end_line = vim.fn.line(".")
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+  end
+  local path = vim.fn.expand("%")
+  local result = path .. ":" .. start_line .. "-" .. end_line
+  vim.fn.setreg("+", result)
+  print("Copied: " .. result)
+end, { desc = "Yank file:lines" })
+
+-- GitHubの該当行を開く
+keymap("n", "<leader>gO", function()
+  local path = vim.fn.expand("%")
+  local line = vim.fn.line(".")
+  local buf_dir = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
+
+  local remote = vim.fn.system("git -C " .. vim.fn.shellescape(buf_dir) .. " remote get-url origin"):gsub("%s+$", "")
+  if vim.v.shell_error ~= 0 or remote == "" then
+    print("Not a git repository")
+    return
+  end
+
+  -- SSH形式をHTTPS形式に変換
+  remote = remote:gsub("git@github.com:", "https://github.com/")
+  remote = remote:gsub("%.git$", "")
+
+  local branch = vim.fn.system("git -C " .. vim.fn.shellescape(buf_dir) .. " rev-parse --abbrev-ref HEAD"):gsub("%s+$", "")
+  local url = remote .. "/blob/" .. branch .. "/" .. path .. "#L" .. line
+  vim.ui.open(url)
+  print("Opened: " .. url)
+end, { desc = "Open line on GitHub" })
+
+-- 範囲選択対応版
+keymap("v", "<leader>gO", function()
+  local start_line = vim.fn.line("v")
+  local end_line = vim.fn.line(".")
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+  end
+
+  local path = vim.fn.expand("%")
+  local buf_dir = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
+
+  local remote = vim.fn.system("git -C " .. vim.fn.shellescape(buf_dir) .. " remote get-url origin"):gsub("%s+$", "")
+  if vim.v.shell_error ~= 0 or remote == "" then
+    print("Not a git repository")
+    return
+  end
+
+  remote = remote:gsub("git@github.com:", "https://github.com/")
+  remote = remote:gsub("%.git$", "")
+
+  local branch = vim.fn.system("git -C " .. vim.fn.shellescape(buf_dir) .. " rev-parse --abbrev-ref HEAD"):gsub("%s+$", "")
+  local url = remote .. "/blob/" .. branch .. "/" .. path .. "#L" .. start_line .. "-L" .. end_line
+  vim.ui.open(url)
+  print("Opened: " .. url)
+end, { desc = "Open lines on GitHub" })

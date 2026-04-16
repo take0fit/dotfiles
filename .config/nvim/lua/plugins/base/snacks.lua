@@ -5,20 +5,38 @@ return {
     config = function(_, opts)
       require("snacks").setup(opts)
 
-      -- Auto show image on cursor hold
+      -- Auto show image on cursor hold (png/image files only, not markdown to avoid noice.nvim conflict)
       vim.api.nvim_create_autocmd("CursorHold", {
         group = vim.api.nvim_create_augroup("snacks_image_hover", { clear = true }),
-        pattern = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.md", "*.markdown" },
+        pattern = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp" },
         callback = function()
           if Snacks and Snacks.image and Snacks.image.hover then
-            -- Safely call hover, ignore errors if no image at cursor
             pcall(Snacks.image.hover)
           end
         end,
       })
 
-      -- Optional: Reduce updatetime for faster hover (default is 4000ms)
-      vim.opt.updatetime = 100 -- Show hover after 1 second
+      -- Monkey-patch: clamp cursor position to buffer bounds in picker jump
+      local actions = require("snacks.picker.actions")
+      local orig_jump = actions.jump
+      actions.jump = function(picker, item, ...)
+        -- Wrap nvim_win_set_cursor to clamp position
+        local orig_set_cursor = vim.api.nvim_win_set_cursor
+        vim.api.nvim_win_set_cursor = function(win, pos)
+          local buf = vim.api.nvim_win_get_buf(win)
+          local line_count = vim.api.nvim_buf_line_count(buf)
+          pos[1] = math.min(pos[1], line_count)
+          pos[1] = math.max(pos[1], 1)
+          local line = vim.api.nvim_buf_get_lines(buf, pos[1] - 1, pos[1], false)[1] or ""
+          pos[2] = math.min(pos[2], #line > 0 and #line - 1 or 0)
+          return orig_set_cursor(win, pos)
+        end
+        local ok, err = pcall(orig_jump, picker, item, ...)
+        vim.api.nvim_win_set_cursor = orig_set_cursor
+        if not ok then
+          vim.notify("Picker jump error: " .. tostring(err), vim.log.levels.WARN)
+        end
+      end
     end,
     keys = {
       {

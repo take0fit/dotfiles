@@ -22,6 +22,15 @@ return {
     },
   },
   {
+    "stevearc/conform.nvim",
+    opts = function(_, opts)
+      opts.formatters_by_ft = opts.formatters_by_ft or {}
+      opts.formatters_by_ft.go = { "goimports" }
+      opts.format_on_save = opts.format_on_save or {}
+      opts.format_on_save.timeout_ms = opts.format_on_save.timeout_ms or 3000
+    end,
+  },
+  {
     "saghen/blink.cmp",
     opts = {
       completion = {
