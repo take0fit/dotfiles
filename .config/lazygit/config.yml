@@ -23,6 +23,9 @@ customCommands:
         labelFormat: '{{.hash | green}} {{.message | yellow}}'
     command: "git show {{index .PromptResponses 1}}"
     output: popup
+os:
+  editPreset: "nvim-remote"
+  openCommand: "nvr --remote-tab {{filename}}"
 gui:
   language: "ja"
   showIcons: true

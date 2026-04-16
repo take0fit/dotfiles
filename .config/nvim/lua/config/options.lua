@@ -101,6 +101,19 @@ vim.g.terminal_color_13 = "#e24d8e" -- bright magenta
 vim.g.terminal_color_14 = "#00b39e" -- bright cyan
 vim.g.terminal_color_15 = "#fcf4dc" -- bright white
 
+-- 自動保存: テキスト変更後・インサートモード離脱時に即時保存
+vim.api.nvim_create_autocmd({ "InsertLeave", "TextChanged" }, {
+  group = vim.api.nvim_create_augroup("auto_save", { clear = true }),
+  callback = function(ev)
+    local buf = ev.buf
+    if vim.bo[buf].modified and vim.bo[buf].modifiable and vim.bo[buf].buftype == "" and vim.fn.expand("%") ~= "" then
+      vim.api.nvim_buf_call(buf, function()
+        vim.cmd("silent! write")
+      end)
+    end
+  end,
+})
+
 -- LSP hover/signature help のボーダー設定
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
   border = "rounded",
